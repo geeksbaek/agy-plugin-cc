@@ -1,0 +1,16 @@
+{
+  "name": "agy",
+  "owner": {
+    "name": "jongyeol"
+  },
+  "metadata": {
+    "description": "Antigravity CLI plugin for Claude Code — review code, delegate tasks, or generate meeting minutes from audio."
+  },
+  "plugins": [
+    {
+      "name": "agy",
+      "source": "./plugins/agy",
+      "description": "Use Antigravity CLI from Claude Code to review code, delegate tasks, or generate meeting minutes from audio."
+    }
+  ]
+}

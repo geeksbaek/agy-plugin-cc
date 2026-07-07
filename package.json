@@ -1,0 +1,14 @@
+{
+  "name": "agy-plugin-cc",
+  "version": "0.1.1",
+  "private": true,
+  "type": "module",
+  "description": "Use Antigravity CLI from Claude Code to review code, delegate tasks, or generate meeting minutes from audio.",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=18.18.0"
+  },
+  "scripts": {
+    "check": "node --check plugins/agy/scripts/agy-companion.mjs && node --check plugins/agy/scripts/lib/agy.mjs && node --check plugins/agy/scripts/lib/render.mjs"
+  }
+}

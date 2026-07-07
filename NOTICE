@@ -1,0 +1,29 @@
+agy-plugin-cc
+
+This project is a derivative work ported from openai/codex-plugin-cc
+(https://github.com/openai/codex-plugin-cc), which is licensed under the
+Apache License, Version 2.0.
+
+The original codex-plugin-cc integrates the OpenAI Codex CLI with Claude Code.
+This port adapts that design to drive the Antigravity CLI (`agy`) instead.
+The Codex-specific app-server JSON-RPC transport and shared broker process have
+been removed and replaced with single-turn Antigravity CLI subprocess
+invocations.
+
+The local grok-plugin-cc port was also used as the immediate structural
+template for this Antigravity port.
+
+Portions of the following files are copied or adapted from the original
+project and remain under the Apache-2.0 license:
+
+  - plugins/agy/scripts/lib/args.mjs
+  - plugins/agy/scripts/lib/process.mjs
+  - plugins/agy/scripts/lib/fs.mjs
+  - plugins/agy/scripts/lib/git.mjs
+  - plugins/agy/scripts/lib/workspace.mjs
+  - plugins/agy/scripts/lib/prompts.mjs
+  - plugins/agy/schemas/review-output.schema.json
+  - plugins/agy/prompts/review.md (adapted from prompts/adversarial-review.md)
+
+Original work Copyright OpenAI.
+Modifications Copyright 2026 jongyeol.

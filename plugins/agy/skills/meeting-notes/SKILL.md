@@ -8,7 +8,7 @@ description: Generate meeting minutes from an audio recording with optional cont
 Use Antigravity through the plugin companion so the audio file is passed as multimodal input.
 
 Primary helper:
-- `node "${CLAUDE_PLUGIN_ROOT}/scripts/agy-companion.mjs" meeting-notes --audio <audio-path> [--context-file <path>] [--format-file <path>] [--output-file <path>] [--model <model>] -- <additional context or format instructions>`
+- `node "${CLAUDE_PLUGIN_ROOT}/scripts/agy-companion.mjs" meeting-notes --audio <audio-path> [--context-file <path>] [--format-file <path>] [--output-file <path>] [--model <model>] [--effort <level>] -- <additional context or format instructions>`
 
 Execution rules:
 - Prefer the helper over direct `agy` calls.

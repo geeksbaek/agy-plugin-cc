@@ -31,20 +31,20 @@ Check readiness at any time with `/agy:setup`.
 - `--base <ref>`: reviews the branch diff against an explicit ref.
 - Trailing text is passed to Antigravity as the review focus.
 
-The command asks Antigravity for JSON matching `schemas/review-output.schema.json` and renders findings ordered by severity.
+The command passes `schemas/review-output.schema.json` to agy with `--json-schema`, reads the validated `structured_output` from the JSON envelope, and renders findings ordered by severity.
 
 ### `/agy:rescue`
 
 ```text
-/agy:rescue [--resume|--fresh] [--read-only] [--model <model>] <request>
+/agy:rescue [--resume|--fresh] [--read-only] [--model <model>] [--effort <level>] <request>
 ```
 
-Forwards the request to a thin `agy-rescue` subagent that calls the companion `task` runtime once and returns Antigravity's output verbatim. Write-capable runs use `--dangerously-skip-permissions`; pass `--read-only` to use `--sandbox`. `--resume` continues the most recent Antigravity conversation in the repository.
+Forwards the request to a thin `agy-rescue` subagent that calls the companion `task` runtime once and returns Antigravity's output verbatim. Write-capable runs use `--dangerously-skip-permissions`; pass `--read-only` to use `--sandbox`. `--resume` continues the most recent Antigravity conversation in the repository. `--model` and `--effort` are passed straight to agy, which validates them; run `agy models` to see the current model ids.
 
 ### `/agy:meeting-notes`
 
 ```text
-/agy:meeting-notes [--audio <path>] [--context-file <path>] [--format-file <path>] [--output-file <path>] [--model <model>] <audio-path> [additional context or format instructions]
+/agy:meeting-notes [--audio <path>] [--context-file <path>] [--format-file <path>] [--output-file <path>] [--model <model>] [--effort <level>] <audio-path> [additional context or format instructions]
 ```
 
 - The audio file can be passed as `--audio <path>` or as the first positional argument.
@@ -67,14 +67,14 @@ Add this repository as a Claude Code plugin marketplace, then install the `agy` 
 
 ## How It Works
 
-Every command shells out to `plugins/agy/scripts/agy-companion.mjs`, which invokes `agy` in headless mode and reads the JSON `response` field:
+Every command shells out to `plugins/agy/scripts/agy-companion.mjs`, which invokes `agy` in headless mode and reads the JSON envelope (`response`, plus `structured_output` for reviews; a non-`SUCCESS` `status` is reported as an error):
 
-- `setup`: `agy --version` and `agy models`
-- `review`: `agy --sandbox --output-format json --print <prompt-file-reference>`
+- `setup`: `agy --version` and `agy models` (model ids are read from the first column of stdout)
+- `review`: `agy --sandbox --json-schema <schema> --output-format json --print <prompt-file-reference>`
 - `task`: `agy --output-format json --print <prompt-file-reference>` with either `--sandbox` or `--dangerously-skip-permissions`
 - `meeting-notes`: `agy --sandbox --output-format json --print <prompt-file-reference>` with the audio path embedded as `@/path/to/audio`
 
-When no `--model` is passed, Antigravity uses its configured default. Override per invocation with `--model <name>` or set `AGY_DEFAULT_MODEL`.
+When no `--model` is passed, Antigravity uses its configured default. No model id is hardcoded in the plugin, so new agy releases work without a plugin update. Set `AGY_DEFAULT_MODEL` to prefer a specific model; it is ignored when `agy models` no longer lists it. Override per invocation with `--model <name>`. Some model ids already include a thinking level (for example a `-high` suffix); `--effort` is forwarded as-is and agy decides how it combines with the selected model.
 
 ## License
 

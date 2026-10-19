@@ -21,6 +21,7 @@ Execution rules:
 Flag handling:
 - Use exactly one `task` invocation per rescue handoff.
 - If the forwarded request includes `--model <name>`, pass it through to `task`.
+- If the forwarded request includes `--effort <value>`, pass it through to `task`. agy validates the value against the selected model.
 - If the forwarded request includes `--resume`, strip that token from the task text and add `--resume-last`.
 - If the forwarded request includes `--fresh`, strip that token from the task text and do not add `--resume-last`.
 - If the forwarded request includes `--read-only`, pass it through so Antigravity runs analysis-only.

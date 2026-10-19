@@ -11,9 +11,9 @@ import { interpolateTemplate, loadPromptTemplate } from "./lib/prompts.mjs";
 import { binaryAvailable } from "./lib/process.mjs";
 import { resolveWorkspaceRoot } from "./lib/workspace.mjs";
 import {
-  DEFAULT_MODEL,
   getAntigravityAuthStatus,
   getAntigravityAvailability,
+  resolveModel,
   runReview,
   runTask
 } from "./lib/agy.mjs";
@@ -24,7 +24,7 @@ const PLUGIN_ROOT = path.resolve(__dirname, "..");
 const REVIEW_SCHEMA_PATH = path.join(PLUGIN_ROOT, "schemas", "review-output.schema.json");
 
 const ARG_CONFIG = {
-  valueOptions: ["cwd", "base", "scope", "model", "prompt-file", "audio", "context-file", "format-file", "output-file"],
+  valueOptions: ["cwd", "base", "scope", "model", "effort", "prompt-file", "audio", "context-file", "format-file", "output-file"],
   booleanOptions: ["json", "write", "read-only", "resume-last"],
   aliasMap: { C: "cwd" }
 };
@@ -139,11 +139,12 @@ function ensureAntigravityReady(cwd) {
   if (!auth.authenticated) {
     throw new Error("Antigravity is not authenticated. Run `agy login`, then retry. See /agy:setup.");
   }
+  return auth;
 }
 
 function handleReview(input, reviewLabel) {
   const workspaceRoot = resolveWorkspaceRoot(input.cwd);
-  ensureAntigravityReady(workspaceRoot);
+  const auth = ensureAntigravityReady(workspaceRoot);
 
   const target = resolveReviewTarget(workspaceRoot, {
     base: input.options.base ?? null,
@@ -155,9 +156,10 @@ function handleReview(input, reviewLabel) {
   const prompt = buildReviewPrompt(context, focusText);
 
   const schema = readJsonFile(REVIEW_SCHEMA_PATH);
-  const model = input.options.model ?? DEFAULT_MODEL;
+  const model = resolveModel(input.options.model, auth.models);
+  const effort = input.options.effort ?? null;
 
-  const reviewResult = runReview(workspaceRoot, { prompt, schema, model });
+  const reviewResult = runReview(workspaceRoot, { prompt, schema, model, effort });
   const rendered = renderReviewResult(reviewResult, {
     reviewLabel,
     targetLabel: target.label
@@ -173,7 +175,7 @@ function handleReview(input, reviewLabel) {
 
 function handleTask(input) {
   const workspaceRoot = resolveWorkspaceRoot(input.cwd);
-  ensureAntigravityReady(workspaceRoot);
+  const auth = ensureAntigravityReady(workspaceRoot);
 
   const prompt = resolvePrompt(input.options, input.positionals);
   if (!prompt) {
@@ -184,9 +186,10 @@ function handleTask(input) {
   // Write-capable by default; --read-only forces analysis-only.
   const write = input.options["read-only"] ? false : true;
   const resume = Boolean(input.options["resume-last"]);
-  const model = input.options.model ?? DEFAULT_MODEL;
+  const model = resolveModel(input.options.model, auth.models);
+  const effort = input.options.effort ?? null;
 
-  const taskResult = runTask(workspaceRoot, { prompt, model, write, resume });
+  const taskResult = runTask(workspaceRoot, { prompt, model, effort, write, resume });
   process.stdout.write(renderTaskResult(taskResult));
   return taskResult.status === 0 ? 0 : 1;
 }
@@ -275,15 +278,17 @@ function buildMeetingNotesPrompt({ audioPath, contextFile, formatFile, inlineCon
 
 function handleMeetingNotes(input) {
   const workspaceRoot = resolveWorkspaceRoot(input.cwd);
-  ensureAntigravityReady(workspaceRoot);
+  const auth = ensureAntigravityReady(workspaceRoot);
 
   const meetingInput = resolveMeetingNotesInput(input);
   const prompt = buildMeetingNotesPrompt(meetingInput);
-  const model = input.options.model ?? DEFAULT_MODEL;
+  const model = resolveModel(input.options.model, auth.models);
+  const effort = input.options.effort ?? null;
 
   const taskResult = runTask(workspaceRoot, {
     prompt,
     model,
+    effort,
     write: false,
     resume: false
   });

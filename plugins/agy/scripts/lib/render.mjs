@@ -159,14 +159,15 @@ export function renderReviewResult(reviewResult, meta) {
 
 export function renderTaskResult(taskResult) {
   const { output, status, stderr, error } = taskResult;
-  const text = output?.text?.trim() || output?.rawOutput?.trim() || "";
+  // When stdout was a JSON envelope, never echo the envelope itself as the answer.
+  const text = output?.text?.trim() || (output?.envelope ? "" : output?.rawOutput?.trim()) || "";
 
   if (text) {
     return `${text}\n`;
   }
 
   const lines = ["Antigravity did not return a final message."];
-  const detail = error?.message || stderr?.trim();
+  const detail = error?.message || stderr?.trim() || output?.parseError;
   if (detail) {
     lines.push("", "```text", detail, "```");
   } else if (status !== 0) {

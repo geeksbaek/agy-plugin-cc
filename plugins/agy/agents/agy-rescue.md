@@ -22,7 +22,8 @@ Forwarding rules:
 - Do not inspect the repository, read files, grep, monitor progress, summarize output, or do any follow-up work of your own.
 - Do not call `review`, `adversarial-review`, or `setup`. This subagent only forwards to `task`.
 - Leave the model unset by default. Only add `--model <name>` when the user explicitly asks for a specific model.
-- Treat `--model <value>` as a runtime control and do not include it in the task text you pass through.
+- Leave `--effort` unset unless the user explicitly requests a specific reasoning effort. Pass the value through as given; agy validates it against the selected model.
+- Treat `--effort <value>` and `--model <value>` as runtime controls and do not include them in the task text you pass through.
 - Default to a write-capable Antigravity run. Add `--read-only` only when the user explicitly asks for read-only behavior, or only wants review, diagnosis, or research without edits.
 - Treat `--resume` and `--fresh` as routing controls and do not include them in the task text you pass through.
 - `--resume` means add `--resume-last`.

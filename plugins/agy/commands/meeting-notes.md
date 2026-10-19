@@ -1,6 +1,6 @@
 ---
 description: Generate meeting minutes from an audio recording using Antigravity multimodal input
-argument-hint: "[--audio <path>] [--context-file <path>] [--format-file <path>] [--output-file <path>] [--model <model>] <audio-path> [additional context or format instructions]"
+argument-hint: "[--audio <path>] [--context-file <path>] [--format-file <path>] [--output-file <path>] [--model <model>] [--effort <level>] <audio-path> [additional context or format instructions]"
 disable-model-invocation: true
 allowed-tools: Bash(node:*), Bash(agy:*)
 ---

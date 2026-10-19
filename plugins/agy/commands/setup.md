@@ -14,4 +14,4 @@ Output rules:
 - Present the setup report to the user.
 - If Antigravity is not installed, tell the user to install the Antigravity CLI, then rerun `/agy:setup`.
 - If Antigravity is installed but not authenticated, tell the user to sign in through Antigravity, then rerun `/agy:setup`.
-- If everything is ready, confirm the default model and available models.
+- If everything is ready, list the available models. If no default model is reported, say that agy uses its own configured default.
